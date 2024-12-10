@@ -15,9 +15,10 @@ def get_file_name(script_path):
     # Set up argparse to accept command-line arguments
     parser = argparse.ArgumentParser(description="Read a file based on command-line argument.")
     parser.add_argument('--test', action='store_true', help="Use test.txt file instead of input.txt")
+    parser.add_argument('--test2', action='store_true', help="Use test2.txt file instead of input.txt")
     
     # Parse the arguments
     args = parser.parse_args()
     
     # Return the appropriate file path
-    return os.path.join(module_dir, 'test.txt' if args.test else 'input.txt')
+    return os.path.join(module_dir, 'test.txt' if args.test else ('test2.txt' if args.test2 else 'input.txt'))
