@@ -6,9 +6,6 @@ file_name = get_file_name(__file__)
 
 @typechecked
 def is_valid(value: int, previous_value: int) -> bool:
-    if previous_value == -1:
-        return True
-
     distance = abs(value - previous_value);
 
     return distance > 0 and distance < 4
@@ -30,9 +27,12 @@ with open(file_name, 'r') as file:
         for value in values:
             new_value = int(value)
 
-            if previous_value != -1:
-                increasing = increasing or new_value > previous_value
-                decreasing = decreasing or new_value < previous_value
+            if previous_value == -1:
+                previous_value = new_value
+                continue
+
+            increasing = increasing or new_value > previous_value
+            decreasing = decreasing or new_value < previous_value
 
             if increasing and decreasing:
                 line_count -= 1
