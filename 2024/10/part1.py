@@ -6,40 +6,56 @@ file_name = get_file_name(__file__)
 grid = []
 with open(file_name, 'r') as file:
     for line in file:
-        grid.append(line.replace("\n", ""))
+        grid.append(line.strip())
 
-# Create a matrix with all values converted to integers
 matrix = [[int(value) for value in row] for row in grid]
 
-def find_positions(arr, value):
-    return [index for index, element in enumerate(arr) if element == value]
+from collections import deque
 
-rowPositions = [];
-for index, value in enumerate(matrix):
-   # find all positions for 0
-   result = find_positions(value, 0);
-   if len(result) > 0:
-      rowPositions.append((index, result))
+# Function to perform BFS and count reachable 9's from a trailhead
+def count_reachable_nines(map, start):
+    rows, cols = len(map), len(map[0])
+    visited = set()
+    queue = deque([start])
+    reachable_nines = 0
 
-# check for the next or previous column or next row if we can go to number 1 (and so on)
-keepPositions = [];
-for key, positions in rowPositions:
-    for position in positions:
-        try:
-            if int(matrix[key][position]+1) == 1:
-                keepPositions.append((key, int(matrix[key][position]+1)))
-
-            if int(matrix[key][position]-1) == 1:
-                keepPositions.append((key, int(matrix[key][position]-1)))
-
-            if int(matrix[key+1][position]) == 1:
-                keepPositions.append((key, int(matrix[key+1][position])))
-
-            if int(matrix[key-1][position]) == 1:
-                keepPositions.append((key, int(matrix[key-1][position])))
-        except IndexError:
+    # Directions: up, down, left, right
+    directions = [(-1, 0), (1, 0), (0, -1), (0, 1)]
+    
+    while queue:
+        x, y = queue.popleft()
+        if (x, y) in visited:
             continue
+        visited.add((x, y))
 
+        # If we reach height 9, increment the count
+        if map[x][y] == 9:
+            reachable_nines += 1
 
+        # Explore neighbors with height increase of exactly 1
+        for dx, dy in directions:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < rows and 0 <= ny < cols and (nx, ny) not in visited:
+                if map[nx][ny] == map[x][y] + 1:
+                    queue.append((nx, ny))
 
-print(keepPositions)
+    return reachable_nines
+
+# Function to calculate the sum of the scores for all trailheads
+def calculate_scores(map):
+    rows, cols = len(map), len(map[0])
+    total_score = 0
+
+    # Traverse the map to find all trailheads (positions with height 0)
+    for i in range(rows):
+        for j in range(cols):
+            if map[i][j] == 0:
+                # For each trailhead, calculate the score (number of reachable 9's)
+                score = count_reachable_nines(map, (i, j))
+                total_score += score
+
+    return total_score
+
+# Calculate and print the total score of all trailheads
+total_score = calculate_scores(matrix)
+print("Total score of all trailheads:", total_score)
