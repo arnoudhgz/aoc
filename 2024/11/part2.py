@@ -1,55 +1,65 @@
 import time
-from collections import Counter
+from collections import defaultdict
 
-# Sample input
-stones = [1950139, 0, 3, 837, 6116, 18472, 228700, 45]
-
-# Define the blink function using a dictionary to store counts
 def blink(stones_count):
-    new_stones_count = Counter()
+    # Use defaultdict for more efficient counting
+    new_stones_count = defaultdict(int)
 
     for stone, count in stones_count.items():
         if stone == 0:
-            new_stones_count[1] += count  # If the stone is 0, it turns into 1
+            new_stones_count[1] += count
         else:
+            # Convert to string only once and use integer operations
             stone_str = str(stone)
-            if len(stone_str) % 2 == 0:
-                # Split the stone into two parts if it has an even number of digits
-                half_length = len(stone_str) // 2
+            str_len = len(stone_str)
+            
+            if str_len % 2 == 0:
+                # Avoid repeated string conversions and slicing
+                half_length = str_len // 2
                 first_half = int(stone_str[:half_length])
                 second_half = int(stone_str[half_length:])
                 new_stones_count[first_half] += count
                 new_stones_count[second_half] += count
             else:
-                new_stones_count[stone * 2024] += count  # For odd-length stones, multiply by 2024
+                # Avoid repeated multiplication
+                new_stones_count[stone * 2024] += count
 
     return new_stones_count
 
-# Process the stones in-place and perform iterations
-def process_stones(stones_count, iterations=1):
+def process_stones(stones, iterations=1):
+    # Convert input to counter more efficiently
+    stones_count = defaultdict(int)
+    for stone in stones:
+        stones_count[stone] += 1
+
+    # Use in-place iteration to reduce memory overhead
     for _ in range(iterations):
-        stones_count = blink(stones_count)  # Update the dictionary of stone counts
+        stones_count = blink(stones_count)
+
     return stones_count
 
-# Convert the initial list of stones to a Counter (frequency dictionary)
-stones_count = Counter(stones)
+def main():
+    # Sample input
+    stones = [1950139, 0, 3, 837, 6116, 18472, 228700, 45]
+    iteration_count = 75
 
-# Perform processing incrementally, 1 iteration at a time
-iteration_count = 75  # Track iteration count
+    # Capture start time with high-resolution timer
+    start_time = time.perf_counter()
 
-# Capture start time
-start_time = time.time()
+    # Process the stones
+    stones_count = process_stones(stones, iterations=iteration_count)
 
-# Process the stones one iteration at a time
-stones_count = process_stones(stones_count, iterations=iteration_count)
+    # Capture end time
+    end_time = time.perf_counter()
 
-# Capture end time
-end_time = time.time()
+    # Final result after the last iteration
+    final_stones_count = sum(stones_count.values())
+    
+    # Calculate and print the time taken in milliseconds
+    execution_time_ms = (end_time - start_time) * 1000
+    
+    print(f"Final amount of stones: {final_stones_count}")
+    print(f"Execution time: {execution_time_ms:.2f} ms")
 
-# Final result after the last iteration
-final_stones_count = sum(stones_count.values())  # Total number of stones after all iterations
-print(f"Final amount of stones: {final_stones_count}")
-
-# Calculate and print the time taken in milliseconds
-execution_time_ms = (end_time - start_time) * 1000
-print(f"Execution time: {execution_time_ms:.2f} ms")
+if __name__ == "__main__":
+    main()
