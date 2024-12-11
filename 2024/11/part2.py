@@ -1,5 +1,6 @@
 import time
 from collections import defaultdict
+from arg_utils import get_file_name
 
 def blink(stones_count):
     # Use defaultdict for more efficient counting
@@ -39,8 +40,16 @@ def process_stones(stones, iterations=1):
     return stones_count
 
 def main():
-    # Sample input
-    stones = [1950139, 0, 3, 837, 6116, 18472, 228700, 45]
+    # Use the utility function to get the file name
+    file_name = get_file_name(__file__)
+
+    text = ""
+    with open(file_name, 'r') as file:
+        for line in file:
+            text += line
+
+    stones =  [int(item) for item in text.split()]
+
     iteration_count = 75
 
     # Capture start time with high-resolution timer
