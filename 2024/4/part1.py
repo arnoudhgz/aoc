@@ -1,4 +1,12 @@
+from arg_utils import get_file_name
 
+# Use the utility function to get the file name
+file_name = get_file_name(__file__)
+count = 0
+grid = []
+with open(file_name, 'r') as file:
+    for line in file:
+        grid.append(line.replace("\n", ""))
 
 matrix = [list(row) for row in grid]
 
